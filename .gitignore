@@ -1,2 +1,6 @@
 Library
 Temp
+*.sln
+*.csproj
+*.userprefs
+Assets/Standard Assets/2D/PhysicsMaterials
