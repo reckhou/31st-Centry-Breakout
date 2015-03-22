@@ -53,13 +53,13 @@ public class PadController : MonoBehaviour {
 	bool IsTouchBorder(Direction direction) {
 		float selfWidth = GetComponent<SpriteRenderer>().bounds.size.x;
 		if (direction == Direction.Left &&
-		    transform.localPosition.x < LeftBorder.transform.localPosition.x +
+		    transform.position.x < LeftBorder.transform.position.x +
 		    	LeftBorder.GetComponent<BoxCollider2D>().bounds.size.x/2 + selfWidth/2) {
 			return true;
 		}
 
 		if (direction == Direction.Right &&
-		    transform.localPosition.x > RightBorder.transform.localPosition.x -
+		    transform.position.x > RightBorder.transform.position.x -
 		    	LeftBorder.GetComponent<BoxCollider2D>().bounds.size.x/2 - selfWidth/2) {
 			return true;
 		}
@@ -71,13 +71,23 @@ public class PadController : MonoBehaviour {
 		// Add a friction force when pad is moving.
 		if (coll.gameObject.tag == "Ball") {
 			Vector2 force = Vector2.zero;
+			Vector2 velocity = coll.transform.GetComponent<Rigidbody2D>().velocity;
+
 			if (Input.GetKey(KeyCode.LeftArrow)) {
 				force.x = - Friction;
+				velocity.x = 0;
+				velocity.y += 0.1f;
 			} else if (Input.GetKey(KeyCode.RightArrow)) {
 				force.x = Friction;
+				velocity.x = 0;
+				velocity.y += 0.1f;
+			} else {
+				return;
 			}
-			force.y = Friction;
+
+			coll.transform.GetComponent<Rigidbody2D>().velocity = velocity;
 			coll.transform.GetComponent<Rigidbody2D>().AddForce(force);
+
 		}
 		
 	}
