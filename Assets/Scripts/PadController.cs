@@ -7,6 +7,8 @@ public class PadController : MonoBehaviour {
 	public GameObject LeftBorder;
 	public GameObject RightBorder;
 
+	public float Friction;
+
 	private static PadController instance;
 	public static PadController Instance {
 		get { 
@@ -63,5 +65,20 @@ public class PadController : MonoBehaviour {
 		}
 
 		return false;
+	}
+
+	void OnCollisionEnter2D(Collision2D coll) {
+		// Add a friction force when pad is moving.
+		if (coll.gameObject.tag == "Ball") {
+			Vector2 force = Vector2.zero;
+			if (Input.GetKey(KeyCode.LeftArrow)) {
+				force.x = - Friction;
+			} else if (Input.GetKey(KeyCode.RightArrow)) {
+				force.x = Friction;
+			}
+			force.y = Friction;
+			coll.transform.GetComponent<Rigidbody2D>().AddForce(force);
+		}
+		
 	}
 }
