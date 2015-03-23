@@ -6,7 +6,14 @@ public class BallController : MonoBehaviour {
 	public Vector2 InitialForce;
 	public bool IsRolling = false;
 
-	float bounceRate = 1.0f;
+	public AudioSource AudioBump;
+	public AudioSource AudioExplode;
+	public AudioSource AudioScore;
+	public AudioSource AudioCombo;
+
+	public int HitBrickCnt;
+	public int Combo;
+	private float LastHitBrickTime;
 
 	// Use this for initialization
 	void Start () {
@@ -44,20 +51,55 @@ public class BallController : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
-//		if (bounceRate < 1.0f) {
-//			GetComponent<CircleCollider2D>().sharedMaterial.bounciness = 1.0f;
-//			bounceRate = 1.0f;
-//		}
-
 		if (coll.gameObject.tag == "BottomBorder") {
-//			Perish();
-		} else if (coll.gameObject.tag == "Brick" || coll.gameObject.tag == "Border") {
-			GetComponent<CircleCollider2D>().sharedMaterial.bounciness = 1.1f;
-		} else {
-			GetComponent<CircleCollider2D>().sharedMaterial.bounciness = 1.0f;
+			AudioExplode.Play();
+			GameController.Instance.LoseLife();
+			Reset();
+			return;
 		}
 
-		print (GetComponent<Rigidbody2D>().velocity.magnitude);
+		if (coll.gameObject.tag != "Brick" && IsRolling) {
+			AudioBump.Play();
+			if (coll.gameObject.tag == "Pad") {
+				float deltaX = transform.localPosition.x - coll.transform.localPosition.x;
+				float padLength = coll.transform.GetComponent<BoxCollider2D>().size.x *
+					coll.transform.localScale.x;
+				float maxForceX = 0.3f;
+				float addForceX = deltaX / padLength * maxForceX;
+				gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(addForceX, 0.1f));
+			}
+		} else if (coll.gameObject.tag == "Brick") {
+			HitBrickCnt++;
+
+			if (Time.time - LastHitBrickTime < GameController.Instance.ComboInterval) {
+				Combo++;
+			} else {
+				Combo = 0;
+			}
+
+			if (Combo > GameController.Instance.ScoreBonusAfterCombo) {
+				AudioCombo.Play();
+			} else {
+				AudioScore.Play();
+			}
+			GameController.Instance.GainScore(Combo);
+			if (Combo >= GameController.Instance.GainLifeAfterCombo && 
+			    Combo % GameController.Instance.GainLifeAfterCombo == 0) {
+				GameController.Instance.GainLife();
+			}
+
+			LastHitBrickTime = Time.time;
+		}
+
+		if (coll.gameObject.tag == "Brick" || coll.gameObject.tag == "TopBorder") {
+			GetComponent<Rigidbody2D>().velocity *= (1.0f + GameController.Instance.BallAccleration);
+		}
+
+	}
+
+	public void Reset() {
+		IsRolling = false;
+		Combo = 0;
 	}
 
 	public void Perish() {

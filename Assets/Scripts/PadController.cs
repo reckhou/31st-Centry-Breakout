@@ -41,9 +41,17 @@ public class PadController : MonoBehaviour {
 
 			Vector2 pos = transform.localPosition;
 			if (Input.GetKey(KeyCode.LeftArrow) && !IsTouchBorder(Direction.Left)) {
-				pos.x -= Speed;
+				if (Input.GetKey(KeyCode.Space)) {
+					pos.x -= Speed * 2f;
+				} else {
+					pos.x -= Speed;
+				}
 			} else if (Input.GetKey(KeyCode.RightArrow) && !IsTouchBorder(Direction.Right)) {
-				pos.x += Speed;
+				if (Input.GetKey(KeyCode.Space)) {
+					pos.x += Speed * 2f;
+				} else {
+					pos.x += Speed;
+				}
 			}
 
 			transform.localPosition = pos;
@@ -67,28 +75,32 @@ public class PadController : MonoBehaviour {
 		return false;
 	}
 
-	void OnCollisionEnter2D(Collision2D coll) {
-		// Add a friction force when pad is moving.
-		if (coll.gameObject.tag == "Ball") {
-			Vector2 force = Vector2.zero;
-			Vector2 velocity = coll.transform.GetComponent<Rigidbody2D>().velocity;
+//	void OnCollisionEnter2D(Collision2D coll) {
+//		// Add a friction force when pad is moving.
+//		if (coll.gameObject.tag == "Ball") {
+//			Vector2 force = Vector2.zero;
+//			Vector2 velocity = coll.transform.GetComponent<Rigidbody2D>().velocity;
+//
+//			if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.Space)) {
+//				force.x = - Friction;
+//				velocity.x = 0;
+//				velocity.y *= 1.1f;
+//			} else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.Space)) {
+//				force.x = Friction;
+//				velocity.x = 0;
+//				velocity.y *= 1.1f;
+//			} else {
+//				return;
+//			}
+//
+//			coll.transform.GetComponent<Rigidbody2D>().velocity = velocity;
+//			coll.transform.GetComponent<Rigidbody2D>().AddForce(force);
+//
+//		}
+//		
+//	}
 
-			if (Input.GetKey(KeyCode.LeftArrow)) {
-				force.x = - Friction;
-				velocity.x = 0;
-				velocity.y += 0.1f;
-			} else if (Input.GetKey(KeyCode.RightArrow)) {
-				force.x = Friction;
-				velocity.x = 0;
-				velocity.y += 0.1f;
-			} else {
-				return;
-			}
-
-			coll.transform.GetComponent<Rigidbody2D>().velocity = velocity;
-			coll.transform.GetComponent<Rigidbody2D>().AddForce(force);
-
-		}
-		
+	public void Perish() {
+		Destroy(gameObject);
 	}
 }
