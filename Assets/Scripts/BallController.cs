@@ -24,6 +24,7 @@ public class BallController : MonoBehaviour {
 		if (IsRolling) {
 			return;
 		}
+		this.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		this.GetComponent<Rigidbody2D>().AddForce(InitialForce);
 		IsRolling = true;
 	}
@@ -66,11 +67,13 @@ public class BallController : MonoBehaviour {
 					coll.transform.localScale.x;
 				float maxForceX = 0.3f;
 				float addForceX = deltaX / padLength * maxForceX;
+				Vector2 newVelocity = gameObject.GetComponent<Rigidbody2D>().velocity;
+				newVelocity.x *= 0.5f;
+				gameObject.GetComponent<Rigidbody2D>().velocity = newVelocity;
 				gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(addForceX, 0.1f));
 			}
 		} else if (coll.gameObject.tag == "Brick") {
 			HitBrickCnt++;
-
 			if (Time.time - LastHitBrickTime < GameController.Instance.ComboInterval) {
 				Combo++;
 			} else {
@@ -91,10 +94,16 @@ public class BallController : MonoBehaviour {
 			LastHitBrickTime = Time.time;
 		}
 
-		if (coll.gameObject.tag == "Brick" || coll.gameObject.tag == "TopBorder") {
-			GetComponent<Rigidbody2D>().velocity *= (1.0f + GameController.Instance.BallAccleration);
+		if (coll.gameObject.tag == "TopBorder") {
+			GetComponent<Rigidbody2D>().AddForce(new Vector2(0, -0.001f));
 		}
 
+//		if (coll.gameObject.tag == "Brick" || coll.gameObject.tag == "TopBorder") {
+//			// ball speed up when hit top border or bricks
+//			Vector2 newVelocity = GetComponent<Rigidbody2D>().velocity;
+//			newVelocity *= (1.0f + GameController.Instance.BallAccleration);
+//			GetComponent<Rigidbody2D>().velocity = newVelocity;
+//		}
 	}
 
 	public void Reset() {

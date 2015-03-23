@@ -75,31 +75,6 @@ public class PadController : MonoBehaviour {
 		return false;
 	}
 
-//	void OnCollisionEnter2D(Collision2D coll) {
-//		// Add a friction force when pad is moving.
-//		if (coll.gameObject.tag == "Ball") {
-//			Vector2 force = Vector2.zero;
-//			Vector2 velocity = coll.transform.GetComponent<Rigidbody2D>().velocity;
-//
-//			if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.Space)) {
-//				force.x = - Friction;
-//				velocity.x = 0;
-//				velocity.y *= 1.1f;
-//			} else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.Space)) {
-//				force.x = Friction;
-//				velocity.x = 0;
-//				velocity.y *= 1.1f;
-//			} else {
-//				return;
-//			}
-//
-//			coll.transform.GetComponent<Rigidbody2D>().velocity = velocity;
-//			coll.transform.GetComponent<Rigidbody2D>().AddForce(force);
-//
-//		}
-//		
-//	}
-
 	public void Perish() {
 		Destroy(gameObject);
 	}
