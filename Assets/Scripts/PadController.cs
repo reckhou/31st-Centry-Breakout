@@ -32,29 +32,38 @@ public class PadController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.anyKey) {
-			if (Input.GetKeyDown(KeyCode.Space)) {
+		float XValue = Input.GetAxis("Horizontal");
+		if (Input.anyKey || XValue != 0) {
+			if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0)) {
 				if (GameController.Instance.BallList.Count > 0) {
 					GameController.Instance.BallList[0].GetComponent<BallController>().Roll();
 				}
 			}
 
 			Vector2 pos = transform.localPosition;
-			if (Input.GetKey(KeyCode.LeftArrow) && !IsTouchBorder(Direction.Left)) {
-				if (Input.GetKey(KeyCode.Space)) {
-					pos.x -= Speed * 2f;
+			float actualSpeed = Speed;
+
+			if (XValue < 0) {
+				if (!IsTouchBorder(Direction.Left)){
+					if (Input.GetKey(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0)) {
+						actualSpeed *= 2f;
+					}
 				} else {
-					pos.x -= Speed;
+					return;
 				}
-			} else if (Input.GetKey(KeyCode.RightArrow) && !IsTouchBorder(Direction.Right)) {
-				if (Input.GetKey(KeyCode.Space)) {
-					pos.x += Speed * 2f;
+			} else if (XValue > 0) {
+				if (!IsTouchBorder(Direction.Right)){
+					if (Input.GetKey(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0)) {
+						actualSpeed *= 2f;
+					}
 				} else {
-					pos.x += Speed;
+					return;
 				}
 			}
 
-			transform.localPosition = pos;
+			float translation = XValue * actualSpeed;
+			translation *= Time.deltaTime;
+			transform.Translate(translation, 0, 0);
 		}
 	}
 
